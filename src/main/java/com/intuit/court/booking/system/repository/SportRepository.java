@@ -2,6 +2,7 @@ package com.intuit.court.booking.system.repository;
 
 import com.intuit.court.booking.system.entity.CourtEntity;
 import com.intuit.court.booking.system.entity.SportEntity;
+import com.intuit.court.booking.system.enums.SportType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,5 +16,5 @@ public interface SportRepository extends JpaRepository<SportEntity, Long> {
     @Override
     Optional<SportEntity> findById(Long aLong);
 
-    Optional<SportEntity> findByNameAndCourtEntity(String name, CourtEntity courtEntity);
+    Optional<SportEntity> findByNameAndCourtEntity(SportType name, CourtEntity courtEntity);
 }

@@ -56,7 +56,7 @@ public class CSVOperationService {
 
             if (existingCourt.isPresent()) {
 
-                Optional<SportEntity> byNameAndCourt = sportRepository.findByNameAndCourtEntity(courtCSV.getName(), existingCourt.get());
+                Optional<SportEntity> byNameAndCourt = sportRepository.findByNameAndCourtEntity(SportType.valueOf(courtCSV.getName()), existingCourt.get());
 
                 SportEntity newSport = byNameAndCourt.orElseGet(SportEntity::new);
 

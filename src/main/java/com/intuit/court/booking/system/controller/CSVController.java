@@ -32,7 +32,7 @@ public class CSVController {
      * @param multipartFile for uploading court csv file
      * @return Return Json object with Message with No of successful Transaction
      */
-    @PostMapping("file/upload/court")
+    @PostMapping("/file/upload/court")
     public UploadResultMessage uploadCourtCsv(@RequestParam("file") MultipartFile multipartFile) {
 
         // Setting default statusMessage
@@ -59,7 +59,7 @@ public class CSVController {
      * @param multipartFile for uploading sport csv file
      * @return Return Json object with Message with No of successful Transaction
      */
-    @PostMapping("file/upload/sport")
+    @PostMapping("/file/upload/sport")
     public UploadResultMessage uploadSportCsv(@RequestParam("file") MultipartFile multipartFile) {
 
         // Setting default statusMessage

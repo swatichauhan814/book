@@ -17,7 +17,8 @@ import java.util.Set;
 public class UserEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_ID_SEQ_GEN")
+	@SequenceGenerator(name = "USERS_ID_SEQ_GEN", sequenceName = "USERS_ID_SEQ", allocationSize = 1)
 	@Column(name = "USER_ID")
 	private long userId;
 
@@ -34,6 +35,6 @@ public class UserEntity {
 	private String password;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-	private Set<RoleEntity> roles;
+	@JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLES_ID"))
+	private Set<RolesEntity> roles;
 }
