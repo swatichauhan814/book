@@ -5,6 +5,8 @@ import com.intuit.court.booking.system.dto.BookingDto;
 import com.intuit.court.booking.system.entity.BookingEntity;
 import com.intuit.court.booking.system.entity.CourtEntity;
 import com.intuit.court.booking.system.entity.SportEntity;
+import com.intuit.court.booking.system.exception.FailureCodes;
+import com.intuit.court.booking.system.exception.SportManagementCSVException;
 import com.intuit.court.booking.system.repository.BookingRepository;
 import com.intuit.court.booking.system.repository.CourtRepository;
 import com.intuit.court.booking.system.repository.SportRepository;
@@ -41,60 +43,75 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
     }
 
+    private boolean validateBookingTimings(LocalDateTime startDateTime, LocalDateTime endDateTime, CourtEntity courtEntity) {
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+        if (!courtEntity.getOpeningTime().toLocalDateTime().isBefore(startDateTime) && !endDateTime.isBefore(courtEntity.getClosingTime().toLocalDateTime())
+                && !startDateTime.isBefore(endDateTime)) {
+            log.error("Opening Time of court should be before closing time");
+            throw new SportManagementCSVException("Invalid courtTimings", FailureCodes.INVALID_TIMING);
+        }
+
+        return true;
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+//    @Transactional(readOnly = true)
     public BookingDto bookCourt(String sportId, String startDateTime, String endDateTime) {
 
         Optional<SportEntity> sportEntity = sportRepository.findById(Long.parseLong(sportId));
 
         CourtEntity courtEntity = sportEntity.get().getCourtEntity();
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-        LocalDateTime endLocalDateTime = LocalDateTime.parse(endDateTime, dateTimeFormatter);
+        LocalDateTime bookingStartTime = LocalDateTime.parse(startDateTime, formatter);
 
-        if (getAvailableSlotsForGivenCourt(String.valueOf(courtEntity.getId()), sportId, endLocalDateTime)) {
+        LocalDateTime bookingEndDatetime = LocalDateTime.parse(endDateTime, formatter);
+
+        if (validateBookingTimings(bookingStartTime, bookingEndDatetime, courtEntity) &&
+                getAvailableSlotsForGivenCourt(String.valueOf(courtEntity.getId()), sportId, bookingStartTime, bookingEndDatetime)) {
 
             Long price = sportEntity.get().getPrice();
 
             BookingEntity bookingEntity = new BookingEntity();
 
-            LocalDateTime startLocalDateTime = LocalDateTime.parse(startDateTime, dateTimeFormatter);
-
-            bookingEntity.setAmount(price * (endLocalDateTime.getHour() - startLocalDateTime.getHour()));
-            bookingEntity.setStartTime(Timestamp.valueOf(endLocalDateTime));
-            bookingEntity.setEndTime(Timestamp.valueOf(startLocalDateTime));
+            bookingEntity.setAmount(price * (bookingEndDatetime.getHour() - bookingStartTime.getHour()));
+            bookingEntity.setStartTime(Timestamp.valueOf(bookingStartTime));
+            bookingEntity.setEndTime(Timestamp.valueOf(bookingEndDatetime));
             bookingEntity.setSportEntity(sportEntity.get());
 
             bookingRepository.save(bookingEntity);
 
             return BookingDto.builder()
+                    .sportName(sportEntity.get().getName().toString())
                     .amount(bookingEntity.getAmount())
-                    .startTime(Timestamp.valueOf(startDateTime))
-                    .endTime(Timestamp.valueOf(endDateTime))
+                    .startTime(startDateTime)
+                    .endTime(endDateTime)
                     .build();
         }
 
         return BookingDto.builder().build();
     }
 
-
-    public boolean getAvailableSlotsForGivenCourt(String courtId, String sportId, LocalDateTime date) {
+    public boolean getAvailableSlotsForGivenCourt(String courtId, String sportId, LocalDateTime bookingStartDatetime, LocalDateTime bookingEndDateTime) {
 
         Optional<CourtEntity> courtEntity = courtRepository.findById(Long.parseLong(courtId));
 
         int openingTime = courtEntity.get().getOpeningTime().toLocalDateTime().toLocalTime().getHour();
-        int closingTime = courtEntity.get().getClosingTime().toLocalDateTime().toLocalTime().getHour();
 
-        List<Integer> totalTimeSlots = courtService.getTotalTimeSlots(sportId, date, courtEntity.get().getSportEntities());
+        List<Integer> totalTimeSlots = courtService.getTotalTimeSlots(sportId, bookingEndDateTime, courtEntity.get().getSportEntities());
 
         int current = 0;
 
-        for (int i = openingTime; i < date.getHour(); i++) {
+        // 12 - 5
+        // 1  -1
+
+        // 2 - 4
+        for (int i = openingTime; i < bookingEndDateTime.getHour(); i++) {
 
             current += totalTimeSlots.get(i);
 
-            if (current > 0)
+            if (current > 0 && totalTimeSlots.get(bookingStartDatetime.getHour()) > 0)
                 return false;
 
         }

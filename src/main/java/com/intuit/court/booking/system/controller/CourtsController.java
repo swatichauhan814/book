@@ -1,14 +1,16 @@
 package com.intuit.court.booking.system.controller;
 
 
-
 import com.intuit.court.booking.system.dto.CourtDto;
 import com.intuit.court.booking.system.exception.FailureCodes;
 import com.intuit.court.booking.system.exception.SportManagementInternalException;
 import com.intuit.court.booking.system.service.CourtService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,11 +25,6 @@ public class CourtsController {
 
     private final CourtService courtService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api/register")
-    public String sayHello() {
-        return "Swagger Hello World";
-    }
-
     @GetMapping("/get/all/")
     public List<CourtDto> getAllCourts() {
         try {
@@ -40,7 +37,7 @@ public class CourtsController {
         }
     }
 
-    @GetMapping("get/{courtId}/time/slot/{sportId}/{date}")
+    @GetMapping("get/time/slot/{courtId}/{sportId}/{date}")
     public List<String> getAvailableTimeSlots(@PathVariable("courtId") String courtId, @PathVariable("sportId") String sportId,
                                               @PathVariable("date") String date) {
 

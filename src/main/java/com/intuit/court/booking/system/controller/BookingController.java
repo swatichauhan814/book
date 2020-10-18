@@ -21,7 +21,7 @@ public class BookingController {
 
     private final BookingService courtService;
 
-    @PostMapping("book/time/slot/{sportId}/{startDateTime}/{endDateTime}")
+    @PostMapping("/book/time/slot/{sportId}")
     @ApiResponses(value = {
             @ApiResponse(code = HTTP_OK, message = "Booked Successfully!",
                     response = BookingDto.class),

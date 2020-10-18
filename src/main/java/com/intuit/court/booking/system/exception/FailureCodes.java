@@ -8,6 +8,7 @@ public enum FailureCodes {
     INVALID_TIMING("Invalid Court Timings"),
     BOOKING_FAILED("Booking failed. Please try a different slot"),
     CSV_INVALID_COURT_ID("Invalid Court Id"),
+    DUPLICATE_EMAIL("User with this email already exists!"),
     UNABLE_TO_FETCH_COURT("Unable to fetch court from the database");
 
     private String message;

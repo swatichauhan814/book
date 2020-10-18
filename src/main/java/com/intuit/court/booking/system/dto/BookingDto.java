@@ -3,9 +3,6 @@ package com.intuit.court.booking.system.dto;
 
 import lombok.*;
 
-import java.sql.Timestamp;
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,13 +12,11 @@ import java.util.List;
 @ToString
 public class BookingDto {
 
-    private String name;
-
     private String sportName;
 
     private long amount;
 
-    private Timestamp startTime;
+    private String startTime;
 
-    private Timestamp endTime;
+    private String endTime;
 }

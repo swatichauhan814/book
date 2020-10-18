@@ -18,6 +18,10 @@ public class BookingEntity {
     @SequenceGenerator(name = "BOOKING_ID_SEQ_GEN", sequenceName = "BOOKING_ID_SEQ", allocationSize = 1)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
+    private UserEntity userEntity;
+
     @Column(name = "START_TIME")
     private Timestamp startTime;
 

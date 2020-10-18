@@ -43,16 +43,7 @@ For the simplicity of system, I have made following assumptions while implementi
 
 2. Select any slot from the above search result and copy its id.
 
-3. Now go to `booking-controller` in the swagger and  execute the book ticket API using the following details - 
-
-`{`
-  `"seatType": "CLASSIC",`
-  `"seatsNumbers": [`
-    `"1A"`
-  `],`
-  `"showId": 1,`
-  `"userId": 1`
-`}`
+3. Now go to `booking-controller` in the swagger and  execute the book ticket API 
 
 This will book a slot for you and you will get booking id along with details in response.
 
@@ -80,6 +71,6 @@ This will book a slot for you and you will get booking id along with details in 
 ## Future Scope
 
 1. Multiple user handling 
-2. Seat locking during payment
+2. Slot locking during payment
 3. Payment Flow
 4. Login and User Account Management

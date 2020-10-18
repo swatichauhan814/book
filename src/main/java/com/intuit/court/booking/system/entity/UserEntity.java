@@ -3,38 +3,36 @@ package com.intuit.court.booking.system.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
-
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "USERS")
+@Table(name = "USER")
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
 @ToString
 public class UserEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_ID_SEQ_GEN")
-	@SequenceGenerator(name = "USERS_ID_SEQ_GEN", sequenceName = "USERS_ID_SEQ", allocationSize = 1)
-	@Column(name = "USER_ID")
-	private long userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_ID_SEQ_GEN")
+    @SequenceGenerator(name = "USER_ID_SEQ_GEN", sequenceName = "USER_ID_SEQ", allocationSize = 1)
+    private long id;
 
-	@Column(name = "FIRST_NAME")
-	private String firstName;
+    private String firstName;
 
-	@Column(name = "LAST_NAME")
-	private String lastName;
+    private String lastName;
 
-	@Column(name = "EMAIL", nullable = false)
-	private String email;
+    private String email;
 
-	@Column(name = "PASSWORD", nullable = false)
-	private String password;
+    private String password;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLES_ID"))
-	private Set<RolesEntity> roles;
+    @ManyToMany
+    @JoinTable(name = "USER_ROLE",joinColumns = @JoinColumn(name = "USER_ID"),inverseJoinColumns = @JoinColumn(name="ROLE_ID"))
+    private Set<RoleEntity> roleEntities;
+
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER)
+    private List<BookingEntity> bookingEntities;
 }
